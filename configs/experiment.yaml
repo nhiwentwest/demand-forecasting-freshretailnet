@@ -1,0 +1,128 @@
+# ============================================================
+# Demand Forecasting Pipeline — Experiment Configuration
+# ============================================================
+
+data:
+  dataset_name: "Dingdong-Inc/FreshRetailNet-50K"
+  cache_dir: "./data/raw"
+  forecasting_data_path: "./data/forecasting_data.parquet"
+  training_data_path: "./data/training_data.parquet"
+  recovered_demand_path: "./data/recovered_demand.parquet"
+
+  # Operating hours in FRN-50K: 6AM to 10PM = 17 hours
+  operating_hours: 17
+  
+  # Stockout threshold: ratio of stockout hours to flag a day as stockout
+  stockout_threshold: 0.5
+
+  # Train/val/test split (time-based)
+  # FRN-50K: 90 days per series. Use last 7 days as test, 7 before that as val.
+  test_days: 7
+  val_days: 7
+
+features:
+  # Lag features (computed on y_eff)
+  lags: [1, 7, 14, 21, 28]
+  
+  # Rolling window features
+  rolling_windows: [7, 14, 28]
+  
+  # Fourier features
+  fourier_periods: [7, 30]
+  fourier_harmonics: 3
+  
+  # Stockout ratio windows
+  stockout_ratio_windows: [7, 14, 28]
+  
+  # Time-decay weights
+  time_decay:
+    recent_weight: 1.0     # Last 365 days
+    mid_weight: 0.5        # 365-730 days
+    old_weight: 0.25       # >730 days
+
+  # Dynamic scaling
+  scaling_window_weeks: 53
+  scaling_min_periods_days: 7
+  scaling_floor: 1.0
+
+stage1_recovery:
+  # TimesNet config
+  timesnet:
+    input_size: 238        # 14 days × 17 hours
+    horizon: 119           # 7 days × 17 hours
+    hidden_size: 64
+    conv_hidden_size: 32
+    num_kernels: 6
+    encoder_layers: 2
+    max_steps: 500
+    batch_size: 32
+    learning_rate: 0.001
+    scaler_type: "robust"
+
+  # iTransformer config
+  itransformer:
+    input_size: 238
+    horizon: 119
+    hidden_size: 64
+    n_heads: 4
+    e_layers: 2
+    max_steps: 500
+    batch_size: 32
+    learning_rate: 0.001
+
+  # Ensemble weights (auto-computed from validation WAPE if set to "auto")
+  ensemble_weights: "auto"
+
+stage2_forecasting:
+  forecast_horizon: 7  # days
+  lookback: 30          # days
+
+  xgboost:
+    n_estimators: 2000
+    max_depth: 8
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    early_stopping_rounds: 50
+    checkpoint_interval: 100
+
+  lightgbm:
+    n_estimators: 2000
+    num_leaves: 63
+    learning_rate: 0.05
+    feature_fraction: 0.8
+    bagging_fraction: 0.8
+
+  tft:
+    hidden_size: 64
+    attention_head_size: 4
+    dropout: 0.1
+    hidden_continuous_size: 16
+    max_epochs: 50
+    batch_size: 64
+    learning_rate: 0.001
+    reduce_on_plateau_patience: 4
+    quantiles: [0.02, 0.1, 0.25, 0.5, 0.75, 0.9, 0.98]
+
+  nhits:
+    input_size: 30
+    n_blocks: [1, 1, 1]
+    mlp_units: [[512, 512], [512, 512], [512, 512]]
+    n_pool_kernel_size: [4, 2, 1]
+    max_steps: 500
+    batch_size: 32
+
+  stacking:
+    meta_learner: "ridge"
+    alpha: 1.0
+    cv_splits: 3
+
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  num_replicas: 1
+
+checkpointing:
+  base_dir: "./checkpoints"
+  session_hours: 12
+  save_buffer_minutes: 15

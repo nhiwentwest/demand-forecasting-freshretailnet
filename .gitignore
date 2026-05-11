@@ -1,0 +1,42 @@
+# Data
+data/
+*.parquet
+*.csv
+*.h5
+
+# Models
+models/*.pt
+models/*.ckpt
+models/*.json
+models/*.pkl
+models/*.joblib
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.eggs/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results (keep structure, ignore large files)
+results/figures/*.png
+results/figures/*.pdf
+
+# Kaggle
+/kaggle/
