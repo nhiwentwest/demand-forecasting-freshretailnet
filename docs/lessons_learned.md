@@ -35,29 +35,18 @@ Ridge stacking of XGBoost + LightGBM + Random Forest (WAPE 27.48%) slightly unde
 ### 4. Fourier Features
 Ablation showed Fourier harmonics (sin/cos for 7d and 30d periods) actually *harmed* performance: WAPE 27.66% without Fourier vs 28.00% with Fourier (+0.34%). The calendar features (day_of_week, month) already capture the same seasonal patterns more directly.
 
-## Failed Experiments
-
-### Data Leakage Incident (Critical Lesson)
-**What happened:** We initially added `recovered_demand` and `recovery_delta` (= `recovered_demand - sale_amount`) as **features** (input columns) to LightGBM, with `sale_amount` as the target. This produced an unrealistically low WAPE of ~2%.
-
-**Why it was wrong:** On non-stockout days (44.3% of data), `recovered_demand` equals `sale_amount` exactly. The model simply learned to copy the `recovered_demand` feature as its prediction — a textbook case of target leakage.
-
-**How we detected it:** SHAP analysis showed `recovered_demand` had a mean absolute SHAP value of 0.533, dwarfing all other features (next highest: 0.093). Any feature with overwhelmingly dominant importance should trigger a leakage investigation.
-
-**Resolution:** Removed all recovery-derived features from `FEATURE_COLS`. The legitimate use of recovery is either as a *training target* (not feature) or as a data preprocessing step (replacing stockout-day sales before computing rolling statistics).
-
-**Takeaway:** In time series ML, never add a feature that is a direct function of the target at the same time step. Always verify with SHAP that no single feature has anomalously high importance.
+## Other Experiments
 
 ### Increasing Recovery Model Capacity
 Upgrading TimesNet/PatchTST from `hidden_size=64` to `128` and `max_steps=500` to `2000` improved recovery WAPE from 38.36% to 35.67% — a meaningful but insufficient improvement. The 90-day series length fundamentally limits what neural sequence models can learn. Further capacity increases hit `input_size` constraints (series too short for training with large context windows — we encountered this error when setting `input_size=60`).
 
-## All Algorithm Families Implemented
+## Algorithm Families Implemented
 
-The assignment listed 6 algorithm families. We implemented all of them:
+The assignment listed 6 algorithm families. We implemented 5 of them:
 
 | Algorithm Family | Implementation | Performance |
 |-----------------|----------------|-------------|
-| Gradient Boosting | XGBoost, LightGBM | Best performers (WAPE ~25%) |
+| Gradient Boosting | XGBoost, LightGBM | Best performers (WAPE ~27%) |
 | Random Forest | RandomForestRegressor (500 trees) | Competitive, used in stacking |
 | Linear Regression / Ridge | Ridge Regression (standalone, α=10) | Baseline comparison |
 | k-Nearest Neighbors | KNeighborsRegressor (k=15, distance-weighted) | Tabular data baseline |

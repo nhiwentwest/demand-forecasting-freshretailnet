@@ -12,7 +12,7 @@
 
 - **Research & problem definition**: Read the FreshRetailNet-50K paper (Wu et al. 2026), understood the two-stage recovery → forecasting framework, selected which algorithm families to implement
 - **Experimental design**: Designed ablation studies (global vs per-city, Fourier features, recovered vs raw target), decided evaluation metrics (WAPE, WPE, R²)
-- **Data analysis**: Identified the 55.7% stockout rate in the dataset, interpreted SHAP feature importance results, discovered the data leakage bug (recovery features accidentally in FEATURE_COLS)
+- **Data analysis**: Identified the 55.7% stockout rate in the dataset, interpreted SHAP feature importance results
 - **Hyperparameter tuning decisions**: Chose LightGBM learning rate (0.01), num_leaves (255), n_estimators (8000) based on validation results
 - **Infrastructure**: Set up training on Lightning AI (GPU), managed Kaggle/Lightning environments, handled dependency conflicts (NumPy 2.x, scikit-learn version mismatches)
 - **All training runs**: Executed 3 full pipeline runs, monitored training, analyzed outputs
