@@ -1,22 +1,6 @@
 # Demand Forecasting: FreshRetailNet-50K
 
 > kSynerX Internship Assessment — Demand Forecasting
-> A benchmark pipeline that **beats published results** on the FreshRetailNet-50K dataset.
-
-## Architecture
-
-```
-Stage 1: Ensemble Demand Recovery
-    TimesNet + PatchTST → weighted ensemble (CV-validated)
-    Recovers latent demand on stockout days (22.3% of records)
-    ↓
-Stage 2: Forecasting Models
-    XGBoost (global) + LightGBM (global) → Ridge stacking
-    45 features: lags, rolling stats, stockout context, calendar, weather, Fourier
-    ↓
-Serving: Ray Serve REST API
-    Loads trained checkpoints, real-time inference via /forecast endpoint
-```
 
 ## Benchmark Results
 
@@ -36,53 +20,52 @@ Serving: Ray Serve REST API
 | N-HiTS (global) | Neural (hierarchical) | 35.42 | -10.66 | 0.8498 | 0.7162 |
 | **Paper baseline** | — | **27.62** | — | **0.816** | — |
 
+## Prototype: Ray Serve Inference API
+
+The trained models are deployed as a REST API using **Ray Serve**, enabling real-time demand prediction.
+
+![Ray Serve Dashboard — ForecastService running with prediction logs](docs/screenshots/ray_serve_predictions.png)
+
+The screenshot shows:
+- **Ray Serve Controller**: HEALTHY, Proxy: HEALTHY x1, Application: RUNNING
+- **ForecastService** deployment: HEALTHY, 1 replica, deployed 2026/05/17
+- **Prediction logs**: Multiple `POST /forecast` requests returning `200 OK` (response times 34–207ms)
+- 6 models loaded: XGBoost, LightGBM, Random Forest, Ridge, kNN, Stacking Ensemble
+
+```bash
+# Start the API (auto-downloads checkpoints from Google Drive if missing)
+python -m src.serving.ray_app --models-dir ./outputs/checkpoints
+
+# Test
+curl http://localhost:8000/health
+curl -X POST http://localhost:8000/forecast \
+  -H "Content-Type: application/json" \
+  -d '{"history":[...], "forecast_days":[...]}'
+```
+
+## Architecture
+
+```
+Stage 1: Ensemble Demand Recovery
+    TimesNet + PatchTST → weighted ensemble (CV-validated)
+    Recovers latent demand on stockout days (32.1% of records)
+    ↓
+Stage 2: Forecasting Models
+    XGBoost (global) + LightGBM (global) → Ridge stacking
+    45 features: lags, rolling stats, stockout context, calendar, weather, Fourier
+    ↓
+Serving: Ray Serve REST API
+    Loads trained checkpoints, real-time inference via /forecast endpoint
+```
+
 ### Ablation Study
 
 | Experiment | WAPE | Δ vs baseline |
-|-----------|------|--------------|
+|-----------|------|--------------| 
 | Global XGBoost (baseline) | 28.00% | — |
 | Global vs per-city | 28.00% vs 29.30% | Global wins by 1.30% |
 | With vs without Fourier | 27.66% vs 28.00% | Fourier adds +0.34% (slightly harmful) |
 | Sale_amount vs recovered target | 28.00% vs 30.09% | Raw target is better |
-
-## Quick Start
-
-```bash
-# 1. Install dependencies
-pip install -r requirements.txt
-
-# 2. Train the full pipeline (requires GPU)
-#    Run on Kaggle or Lightning AI
-python notebooks/full_pipeline.py
-
-# 3. Start the inference API (after training)
-python -m src.serving.ray_app --models-dir ./outputs/checkpoints
-
-# 4. Test the API
-curl http://localhost:8000/health
-curl http://localhost:8000/docs   # Interactive Swagger UI
-```
-
-### API Usage Example
-
-```bash
-curl -X POST http://localhost:8000/forecast \
-  -H "Content-Type: application/json" \
-  -d '{
-    "history": [
-      {"sale_amount": 1.2, "stockout_ratio": 0.0, "is_stockout": 0, "stockout_hours": 0},
-      {"sale_amount": 0.8, "stockout_ratio": 0.0, "is_stockout": 0, "stockout_hours": 0},
-      ... (7-28 days of recent sales)
-    ],
-    "forecast_days": [
-      {"day_of_week": 1, "week_of_year": 20, "month": 5, "is_weekend": 0,
-       "day_of_month": 14, "city_id": 0, "discount": 0.0, "activity_flag": 0,
-       "holiday_flag": 0, "precpt": 0.0, "avg_temperature": 28.0,
-       "avg_humidity": 75.0, "avg_wind_level": 2.0,
-       "first_category_id_te": 1.0, "city_id_te": 1.0}
-    ]
-  }'
-```
 
 ## Features Considered
 
@@ -139,7 +122,7 @@ Additionally implemented (not in assignment list):
 ```
 ├── configs/experiment.yaml          # Hyperparameters
 ├── notebooks/
-│   └── full_pipeline.py             # Complete training pipeline (Kaggle/Lightning AI)
+│   └── full_pipeline.ipynb          # Complete training pipeline (with outputs)
 ├── src/
 │   ├── data/                        # Data loading, preprocessing, feature engineering
 │   ├── stage1_recovery/             # TimesNet + PatchTST ensemble recovery
@@ -148,9 +131,10 @@ Additionally implemented (not in assignment list):
 │   └── serving/                     # Ray Serve REST API with real inference
 ├── docs/
 │   ├── lessons_learned.md           # Experiments, failures, insights
-│   └── ai_disclosure.md             # AI-assisted vs self-written code
+│   ├── ai_disclosure.md             # AI-assisted vs self-written code
+│   └── screenshots/                 # Ray Serve demo screenshots
 ├── outputs/                         # Generated after training
-│   ├── checkpoints/                 # Saved model files
+│   ├── checkpoints/                 # Saved model files (auto-downloaded from Google Drive)
 │   └── results/                     # Benchmark tables, SHAP plots
 └── requirements.txt
 ```
@@ -160,12 +144,11 @@ Additionally implemented (not in assignment list):
 1. **FreshRetailNet-50K** — [Dingdong-Inc/FreshRetailNet-50K](https://huggingface.co/datasets/Dingdong-Inc/FreshRetailNet-50K) (dataset)
 2. **Wu et al. 2026** — [arXiv:2505.16319](https://arxiv.org/abs/2505.16319) (two-stage framework, paper baseline)
 3. **NeuralForecast** — [Nixtla/neuralforecast](https://github.com/Nixtla/neuralforecast) (TimesNet, PatchTST, N-HiTS)
-4. **MLForecast** — [Nixtla/mlforecast](https://github.com/Nixtla/mlforecast) (referenced, NeuralForecast used instead for deep model support)
 
 ## AI Disclosure
 
-See [docs/ai_disclosure.md](docs/ai_disclosure.md) for details on AI-assisted vs self-written code.
+See [docs/ai_disclosure.md](docs/ai_disclosure.md) for details.
 
 ## Lessons Learned
 
-See [docs/lessons_learned.md](docs/lessons_learned.md) for full write-up including the data leakage incident and experimental findings.
+See [docs/lessons_learned.md](docs/lessons_learned.md) for full write-up.
