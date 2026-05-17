@@ -1,15 +1,9 @@
-# Data
-data/
-*.parquet
-*.csv
-*.h5
+# Checkpoints (downloaded from Google Drive via ray_app.py)
+outputs/checkpoints/
 
-# Models
-models/*.pt
-models/*.ckpt
-models/*.json
-models/*.pkl
-models/*.joblib
+# Large data files
+outputs/recovered_data.parquet
+outputs/eval_data.parquet
 
 # Python
 __pycache__/
@@ -17,10 +11,6 @@ __pycache__/
 *.pyo
 .eggs/
 *.egg-info/
-dist/
-build/
-.venv/
-venv/
 
 # Jupyter
 .ipynb_checkpoints/
@@ -28,15 +18,13 @@ venv/
 # IDE
 .vscode/
 .idea/
-*.swp
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Results (keep structure, ignore large files)
-results/figures/*.png
-results/figures/*.pdf
-
-# Kaggle
-/kaggle/
+# Old/utility scripts (notebook is the main deliverable)
+notebooks/full_pipeline.py
+notebooks/create_notebook.py
+notebooks/session1_data_recovery.py
+notebooks/session2_forecasting.py
