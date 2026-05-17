@@ -28,3 +28,4 @@ notebooks/full_pipeline.py
 notebooks/create_notebook.py
 notebooks/session1_data_recovery.py
 notebooks/session2_forecasting.py
+.venv/
