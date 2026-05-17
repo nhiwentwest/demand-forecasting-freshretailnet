@@ -42,16 +42,16 @@ Upgrading TimesNet/PatchTST from `hidden_size=64` to `128` and `max_steps=500` t
 
 ## Algorithm Families Implemented
 
-The assignment listed 6 algorithm families. We implemented 5 of them:
+The assignment listed 6 algorithm families. We implemented 4 of them:
 
 | Algorithm Family | Implementation | Performance |
 |-----------------|----------------|-------------|
-| Gradient Boosting | XGBoost, LightGBM | Best performers (WAPE ~27%) |
-| Random Forest | RandomForestRegressor (500 trees) | Competitive, used in stacking |
+| Random Forest / Gradient Boosting | XGBoost, LightGBM, RandomForestRegressor (500 trees) | Best performers (WAPE ~27%), used in stacking |
 | Linear Regression / Ridge | Ridge Regression (standalone, α=10) | Baseline comparison |
 | k-Nearest Neighbors | KNeighborsRegressor (k=15, distance-weighted) | Tabular data baseline |
 | LSTM / GRU | NeuralForecast LSTM (2-layer, 128 hidden) | Short-series neural baseline |
-| N-HiTS | Hierarchical interpolation (modern neural) | Neural architecture comparison |
+
+Additionally: N-HiTS, TimesNet, PatchTST (not in assignment list, used for recovery and neural comparison).
 
 ### Algorithms Considered but Excluded
 

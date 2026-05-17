@@ -93,12 +93,11 @@ Serving: Ray Serve REST API
 
 ## Algorithms
 
-### Implemented (5/6 algorithm families from assignment)
+### Implemented (4/6 algorithm families from assignment)
 
 | Algorithm Family | Implementation | Role |
 |-----------------|----------------|------|
-| **Gradient Boosting** | XGBoost, LightGBM | Best forecasters (WAPE ~27%) |
-| **Random Forest** | RandomForestRegressor (500 trees) | Base forecaster + stacking component |
+| **Random Forest / Gradient Boosting** | XGBoost, LightGBM, RandomForestRegressor (500 trees) | Best forecasters (WAPE ~27%) + stacking component |
 | **Linear Regression / Ridge** | Ridge Regression (standalone α=10) | Linear baseline + stacking meta-learner |
 | **k-Nearest Neighbors** | KNeighborsRegressor (k=15, distance-weighted) | Instance-based baseline |
 | **LSTM / GRU** | NeuralForecast LSTM (2-layer, 128 hidden) | Recurrent neural baseline |
