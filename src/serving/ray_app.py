@@ -409,13 +409,19 @@ def create_app(models_dir: str = "./outputs/checkpoints"):
                     pred_lgb = float(self.models["lightgbm"].predict(X)[0])
                     pred_lgb = max(pred_lgb, 0.0)
 
-                # Ensemble
-                if "stacking" in self.models and "xgboost" in self.models and "lightgbm" in self.models:
-                    meta_X = np.array([[pred_xgb, pred_lgb]])
+                # Random Forest prediction
+                pred_rf = 0.0
+                if "random_forest" in self.models:
+                    pred_rf = float(self.models["random_forest"].predict(X)[0])
+                    pred_rf = max(pred_rf, 0.0)
+
+                # Stacking ensemble (meta-learner expects [lgb, rf, xgb] order)
+                if "stacking" in self.models and all(k in self.models for k in ["xgboost", "lightgbm", "random_forest"]):
+                    meta_X = np.array([[pred_lgb, pred_rf, pred_xgb]])
                     pred_ens = float(self.models["stacking"].predict(meta_X)[0])
                     pred_ens = max(pred_ens, 0.0)
                 else:
-                    available = [p for p in [pred_xgb, pred_lgb] if p > 0]
+                    available = [p for p in [pred_xgb, pred_lgb, pred_rf] if p > 0]
                     pred_ens = float(np.mean(available)) if available else 0.0
 
                 predictions.append({
