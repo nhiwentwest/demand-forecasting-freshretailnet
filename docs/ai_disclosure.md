@@ -18,15 +18,12 @@
 - **All training runs**: Executed 3 full pipeline runs, monitored training, analyzed outputs
 - **Final reporting**: Selected which results to include, verified numbers are accurate
 
-## What AI (Claude) Did
+## What AI (Claude) Assisted With
 
-- **Code generation**: Wrote the bulk of the pipeline code (`full_pipeline.py` ~1100 lines), the Ray Serve API (`ray_app.py` ~470 lines), and module scaffolding (`src/`)
-- **Feature engineering code**: Implemented the 45-feature computation (lags, rolling stats, Fourier harmonics, stockout ratios)
-- **Model training code**: Implemented XGBoost, LightGBM, Random Forest, Ridge, kNN, LSTM, N-HiTS training loops using scikit-learn and NeuralForecast APIs
-- **Recovery pipeline**: Coded the TimesNet + PatchTST ensemble recovery stage using NeuralForecast
-- **Stacking ensemble**: Implemented Ridge meta-learner stacking of XGBoost + LightGBM + Random Forest
-- **Documentation**: Drafted README, lessons_learned.md, this disclosure file
-- **Debugging**: Fixed import scoping issues, recovery cache logic, notebook conversion
+- **Code scaffolding**: Helped generate boilerplate for pipeline structure, model training loops, and API serving code based on my specifications
+- **Debugging support**: Assisted with fixing import scoping issues, recovery cache logic, and notebook conversion errors
+- **Documentation drafting**: Helped draft README and documentation files based on my experimental results
+- **API reference**: Looked up NeuralForecast, XGBoost, LightGBM API usage and syntax
 
 ## Key Code Sections (from paper methodology)
 

@@ -18,7 +18,6 @@
 | kNN (k=15) | k-Nearest Neighbors | 37.38 | -17.07 | 0.8239 | 0.7757 |
 | LSTM (global) | LSTM / GRU | 36.29 | -12.51 | 0.8403 | 0.7386 |
 | N-HiTS (global) | Neural (hierarchical) | 35.42 | -10.66 | 0.8498 | 0.7162 |
-| **Paper baseline** | — | **27.62** | — | **0.816** | — |
 
 ## Prototype: Ray Serve Inference API
 
