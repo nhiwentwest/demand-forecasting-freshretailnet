@@ -36,8 +36,6 @@ Serving: Ray Serve REST API
 | N-HiTS (global) | Neural (hierarchical) | 35.42 | -10.66 | 0.8498 | 0.7162 |
 | **Paper baseline** | — | **27.62** | — | **0.816** | — |
 
-**Best model: LightGBM (global) — WAPE 27.03%, beating paper baseline (27.62%)**
-
 ### Ablation Study
 
 | Experiment | WAPE | Δ vs baseline |
@@ -113,23 +111,28 @@ curl -X POST http://localhost:8000/forecast \
 
 ## Algorithms
 
-### Implemented (6/6 algorithm families from assignment)
+### Implemented (5/6 algorithm families from assignment)
 
 | Algorithm Family | Implementation | Role |
 |-----------------|----------------|------|
-| **Gradient Boosting** | XGBoost, LightGBM | Best forecasters (WAPE ~25%) |
+| **Gradient Boosting** | XGBoost, LightGBM | Best forecasters (WAPE ~27%) |
 | **Random Forest** | RandomForestRegressor (500 trees) | Base forecaster + stacking component |
 | **Linear Regression / Ridge** | Ridge Regression (standalone α=10) | Linear baseline + stacking meta-learner |
 | **k-Nearest Neighbors** | KNeighborsRegressor (k=15, distance-weighted) | Instance-based baseline |
 | **LSTM / GRU** | NeuralForecast LSTM (2-layer, 128 hidden) | Recurrent neural baseline |
-| **Neural (modern)** | TimesNet, PatchTST, N-HiTS | Recovery + neural forecasting |
+
+Additionally implemented (not in assignment list):
+| Model | Role |
+|-------|------|
+| **N-HiTS** | Hierarchical interpolation neural model |
+| **TimesNet, PatchTST** | Used in Stage 1 demand recovery |
 
 ### Not Implemented (with justification)
 
 | Algorithm | Reason |
 |-----------|--------|
-| ARIMA/SARIMA | Single-series method; impractical for 50,000 series. Global approach is fundamentally different. |
-| ETS/Holt-Winters | Same as ARIMA — per-series only. Covered by global neural models. |
+| ARIMA/SARIMA | Single-series method; impractical for 50,000 series. Would require fitting 50K individual models. |
+| ETS/Holt-Winters | Same limitation as ARIMA — per-series only, does not scale to this dataset. |
 
 ## Project Structure
 
