@@ -116,16 +116,12 @@ Additionally implemented (not in assignment list):
 
 ## Project Structure
 
-```
-├── configs/experiment.yaml          # Hyperparameters
+```text
 ├── notebooks/
-│   └── full_pipeline.ipynb          # Complete training pipeline (with outputs)
+│   ├── stage1.ipynb                 # Stage 1: Demand recovery (TimesNet + PatchTST)
+│   └── stage2.ipynb                 # Stage 2: Forecasting (Tree models, N-HiTS, Stacking)
 ├── src/
-│   ├── data/                        # Data loading, preprocessing, feature engineering
-│   ├── stage1_recovery/             # TimesNet + PatchTST ensemble recovery
-│   ├── stage2_forecasting/          # XGBoost, LightGBM, N-HiTS, stacking
-│   ├── evaluation/                  # Metrics (WAPE, WPE, R², ρ_DS)
-│   └── serving/                     # Ray Serve REST API with real inference
+│   └── serving/                     # Ray Serve REST API for real-time inference
 ├── docs/
 │   ├── lessons_learned.md           # Experiments, failures, insights
 │   ├── ai_disclosure.md             # AI-assisted vs self-written code
