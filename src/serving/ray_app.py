@@ -22,15 +22,15 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 # ── Google Drive checkpoint URLs ──
-# If checkpoints are not found locally, they will be auto-downloaded.
+# Note: You will need to upload your newly trained WPE=0 checkpoints to Google Drive
+# and update these IDs if you want the API to auto-download them.
 GDRIVE_CHECKPOINTS = {
-    "knn_global.joblib": "1I4Ick1pvMneQNDAFGij9vfD93lWLzMq6",
-    "lightgbm_global_mse.txt": "13syo7axA7kPdih3wc7apj-Ru6V8NyuMJ",
-    "lightgbm_global_recovered.txt": "1HiKgCI5X7I2CfNM4IjpD6ZNC-wW_QUHR",
-    "random_forest_global.joblib": "1fQCWvkYihNpqs88376ai9sdnyr4q5WNX",
-    "ridge_standalone.joblib": "1wQ0udHtZNwCSjI5KCtY3eWvd7Ek7tYv8",
-    "stacking_ridge.joblib": "1c5YTq2K5Y8H83a6_ETjZSWHzLILvykwx",
-    "xgboost_global.json": "1eo_o66QvyEhrK8fil47iYU3MKdpZk7Pn",
+    # "knn_global.joblib": "...",
+    # "lightgbm_global.txt": "...",
+    # "random_forest_global.joblib": "...",
+    # "ridge_standalone.joblib": "...",
+    # "stacking_ridge.joblib": "...",
+    # "xgboost_global.json": "...",
 }
 
 
@@ -199,7 +199,7 @@ def create_app(models_dir: str = "./outputs/checkpoints"):
 
     Args:
         models_dir: Directory containing saved model checkpoints
-                    (xgboost_global.json, lightgbm_global_mse.txt).
+                    (xgboost_global.json, lightgbm_global.txt, etc).
                     If not found locally, auto-downloads from Google Drive.
     """
     # Auto-download checkpoints if missing
@@ -301,8 +301,8 @@ def create_app(models_dir: str = "./outputs/checkpoints"):
                 self.models["xgboost"] = model
                 logger.info(f"  Loaded XGBoost from {xgb_path}")
 
-            # LightGBM global (MSE)
-            lgb_path = self.models_dir / "lightgbm_global_mse.txt"
+            # LightGBM global
+            lgb_path = self.models_dir / "lightgbm_global.txt"
             if lgb_path.exists():
                 import lightgbm as lgb
                 model = lgb.Booster(model_file=str(lgb_path))
