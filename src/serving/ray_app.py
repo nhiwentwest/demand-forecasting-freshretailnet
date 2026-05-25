@@ -25,12 +25,12 @@ logger = logging.getLogger(__name__)
 # Note: You will need to upload your newly trained WPE=0 checkpoints to Google Drive
 # and update these IDs if you want the API to auto-download them.
 GDRIVE_CHECKPOINTS = {
-    # "knn_global.joblib": "...",
-    # "lightgbm_global.txt": "...",
-    # "random_forest_global.joblib": "...",
-    # "ridge_standalone.joblib": "...",
-    # "stacking_ridge.joblib": "...",
-    # "xgboost_global.json": "...",
+    "knn_global.joblib": "dummy_id_knn_replace_me_123",
+    "lightgbm_global.txt": "dummy_id_lgb_replace_me_123",
+    "random_forest_global.joblib": "dummy_id_rf_replace_me_123",
+    "ridge_standalone.joblib": "dummy_id_ridge_replace_me_123",
+    "stacking_ridge.joblib": "dummy_id_stacking_replace_me_123",
+    "xgboost_global.json": "dummy_id_xgb_replace_me_123",
 }
 
 
