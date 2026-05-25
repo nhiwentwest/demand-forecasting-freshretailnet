@@ -9,15 +9,14 @@
 
 | Model | Algorithm Family | WAPE (%) | WPE (%) | R² | RMSE |
 |-------|-----------------|----------|---------|-----|------|
-| **LGB-MSE (global)** | Gradient Boosting | **27.03** | -4.91 | **0.8997** | 0.5853 |
-| Stacking Ensemble | Ensemble (Ridge meta) | 27.48 | -6.58 | 0.8929 | 0.6048 |
-| XGBoost (global) | Gradient Boosting | 28.00 | -3.87 | 0.8706 | 0.6650 |
-| LGB Blend 70/30 | Gradient Boosting | 27.45 | -4.92 | 0.8926 | 0.6057 |
-| Random Forest (global) | Random Forest | 29.30 | -6.73 | 0.8852 | 0.6263 |
-| Ridge Regression | Linear Regression | 33.81 | -7.85 | 0.8531 | 0.7084 |
-| kNN (k=15) | k-Nearest Neighbors | 37.38 | -17.07 | 0.8239 | 0.7757 |
-| LSTM (global) | LSTM / GRU | 36.29 | -12.51 | 0.8403 | 0.7386 |
-| N-HiTS (global) | Neural (hierarchical) | 35.42 | -10.66 | 0.8498 | 0.7162 |
+| **Stacking Ensemble** | Ensemble (Ridge meta) | **28.04** | -5.29 | **0.9205** | 0.5172 |
+| Random Forest (global)| Random Forest | 28.21 | -3.50 | 0.9202 | 0.5184 |
+| LightGBM (global) | Gradient Boosting | 28.73 | -5.90 | 0.8885 | 0.6128 |
+| XGBoost (global) | Gradient Boosting | 28.89 | -3.91 | 0.8785 | 0.6395 |
+| Ridge Regression | Linear Regression | 29.66 | -7.89 | 0.9179 | 0.5255 |
+| N-HiTS (global) | Neural (hierarchical) | 31.05 | **0.07** | 0.9012 | 0.5766 |
+| LSTM (global) | LSTM / GRU | 31.91 | **-1.46** | 0.8918 | 0.6036 |
+| kNN (k=15) | k-Nearest Neighbors | 34.20 | -14.47 | 0.8755 | 0.6474 |
 
 ## Prototype: Ray Serve Inference API
 
@@ -59,12 +58,12 @@ Serving: Ray Serve REST API
 
 ### Ablation Study
 
-| Experiment | WAPE | Δ vs baseline |
-|-----------|------|--------------| 
-| Global XGBoost (baseline) | 28.00% | — |
-| Global vs per-city | 28.00% vs 29.30% | Global wins by 1.30% |
-| With vs without Fourier | 27.66% vs 28.00% | Fourier adds +0.34% (slightly harmful) |
-| Sale_amount vs recovered target | 28.00% vs 30.09% | Raw target is better |
+| Experiment | Condition | WAPE (%) | Δ WAPE |
+|-----------|-----------|----------|--------|
+| Recovery impact | raw vs recovered | 28.89 vs 29.34 | +0.44 |
+| Stacking value | single → ensemble | 28.89 → 28.04 | +0.85 |
+| Global vs per-city | global vs per-city | 28.89 vs 29.69 | +0.80 |
+| Fourier features | without → with | 29.37 → 28.89 | +0.48 |
 
 ## Features Considered
 
